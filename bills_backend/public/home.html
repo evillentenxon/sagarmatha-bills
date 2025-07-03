@@ -117,12 +117,8 @@
             color: white;
         }
 
-        .save-btn {
+        .generate-btn {
             background-color: #d97706;
-        }
-
-        .print-btn {
-            background-color: #92400e;
         }
 
         .logo {
@@ -131,7 +127,6 @@
             width: 90px;
             border-radius: 50%;
             border: 4px solid #fef3c7;
-            /* light yellow border */
             object-fit: cover;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             background-color: white;
@@ -159,6 +154,20 @@
         </div>
         <div class="field-group">
             <div class="field">
+                <label>Phone Number</label>
+                <input type="text" id="customerPhone" placeholder="Enter phone number" />
+            </div>
+            <div class="field">
+                <label>Vehicle Number</label>
+                <input type="text" id="vehicleNumber" placeholder="Enter vehicle number" />
+            </div>
+            <div class="field">
+                <label>Bill Number</label>
+                <input type="text" id="billNumber" placeholder="Enter bill number" />
+            </div>
+        </div>
+        <div class="field-group">
+            <div class="field">
                 <label>Search Parts</label>
                 <input type="text" id="searchInput" placeholder="Search parts..." onkeyup="searchParts()" />
                 <div id="suggestions" class="suggestions"></div>
@@ -173,6 +182,7 @@
                         <th>Qty</th>
                         <th>Price</th>
                         <th>Total</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -180,13 +190,13 @@
                     <tr>
                         <td colspan="4"><strong>Grand Total</strong></td>
                         <td id="grandTotal">0</td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
         <div class="buttons">
-            <button class="save-btn" onclick="alert('Saved!')">Save</button>
-            <button class="print-btn" onclick="window.print()">Print</button>
+            <button class="generate-btn" onclick="generateBill()">Generate Bill</button>
         </div>
     </div>
 
@@ -195,6 +205,11 @@
             { id: 1, name: "Filter", price: 500 },
             { id: 2, name: "Oil Pump", price: 1200 },
             { id: 3, name: "Hydraulic Hose", price: 800 },
+            { id: 4, name: "Engine Oil", price: 1500 },
+            { id: 5, name: "Brake Pad", price: 2500 },
+            { id: 6, name: "Battery", price: 8000 },
+            { id: 7, name: "Radiator", price: 4500 },
+            { id: 8, name: "Alternator", price: 6000 },
         ];
 
         let billItems = [];
@@ -239,18 +254,63 @@
                 total += rowTotal;
 
                 row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${item.name}</td>
-          <td>${item.quantity}</td>
-          <td>Rs.${item.price}</td>
-          <td>Rs.${rowTotal}</td>
-        `;
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>
+                        <input type="number" value="${item.quantity}" min="1" 
+                               onchange="updateQuantity(${item.id}, this.value)" style="width: 50px;">
+                    </td>
+                    <td>Rs.${item.price}</td>
+                    <td>Rs.${rowTotal}</td>
+                    <td><button onclick="removeItem(${item.id})">Remove</button></td>
+                `;
                 tbody.appendChild(row);
             });
 
             document.getElementById("grandTotal").innerText = `Rs.${total}`;
         }
+
+        function updateQuantity(id, newQuantity) {
+            const item = billItems.find(item => item.id === id);
+            if (item) {
+                item.quantity = parseInt(newQuantity) || 1;
+                updateBillTable();
+            }
+        }
+
+        function removeItem(id) {
+            billItems = billItems.filter(item => item.id !== id);
+            updateBillTable();
+        }
+
+        function generateBill() {
+            const customerName = document.getElementById("customerName").value;
+            const customerAddress = document.getElementById("customerAddress").value;
+            const billDate = document.getElementById("billDate").value;
+            const customerPhone = document.getElementById("customerPhone").value;
+            const vehicleNumber = document.getElementById("vehicleNumber").value;
+            const billNumber = document.getElementById("billNumber").value;
+
+            if (!customerName || billItems.length === 0) {
+                alert("Please enter customer name and add at least one item");
+                return;
+            }
+
+            // Store data in localStorage to pass to the bill page
+            localStorage.setItem('billData', JSON.stringify({
+                customerName,
+                customerAddress,
+                billDate,
+                customerPhone,
+                vehicleNumber,
+                billNumber,
+                items: billItems,
+                grandTotal: document.getElementById("grandTotal").innerText
+            }));
+
+            // Open the bill page
+            window.open('bill.html', '_blank');
+        }
     </script>
 </body>
-
 </html>

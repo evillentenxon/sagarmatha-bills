@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Sagarmatha Bill</title>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            color: #78350f;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #92400e;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .customer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .info-block {
+            flex: 1;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #92400e;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #fef3c7;
+            text-align: center;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #fef3c7;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: right;
+            font-style: italic;
+        }
+
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #92400e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 90px;
+            border-radius: 50%;
+            border: 4px solid #fef3c7;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="./images/Construction Vehicle.png" alt="logo" class="logo" />
+        <div class="header">
+            <div class="title">Sagarmatha Earthmoving Spare Parts</div>
+            <div class="subtitle">Wholesale and Retail of Construction Vehicle Parts</div>
+        </div>
+
+        <div class="customer-info">
+            <div class="info-block">
+                <div><span class="info-label">Bill No:</span> <span id="displayBillNumber"></span></div>
+                <div><span class="info-label">Date:</span> <span id="displayBillDate"></span></div>
+                <div><span class="info-label">Vehicle No:</span> <span id="displayVehicleNumber"></span></div>
+            </div>
+            <div class="info-block">
+                <div><span class="info-label">Name:</span> <span id="displayCustomerName"></span></div>
+                <div><span class="info-label">Address:</span> <span id="displayCustomerAddress"></span></div>
+                <div><span class="info-label">Phone:</span> <span id="displayCustomerPhone"></span></div>
+            </div>
+        </div>
+
+        <table id="billTable">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="billItems"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4" style="text-align: right;">Grand Total:</td>
+                    <td id="displayGrandTotal" style="text-align: right;"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="footer">
+            <p>Thank you for your business!</p>
+            <p>For any queries, please contact: 9841234567</p>
+        </div>
+
+        <button class="print-btn" onclick="window.print()">Print Bill</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const billData = JSON.parse(localStorage.getItem('billData'));
+
+            if (billData) {
+                // Display customer info
+                document.getElementById('displayCustomerName').textContent = billData.customerName;
+                document.getElementById('displayCustomerAddress').textContent = billData.customerAddress;
+                document.getElementById('displayCustomerPhone').textContent = billData.customerPhone;
+                document.getElementById('displayBillDate').textContent = billData.billDate;
+                document.getElementById('displayVehicleNumber').textContent = billData.vehicleNumber;
+                document.getElementById('displayBillNumber').textContent = billData.billNumber;
+                document.getElementById('displayGrandTotal').textContent = billData.grandTotal;
+
+                // Display bill items
+                const tbody = document.getElementById('billItems');
+                billData.items.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    const total = item.quantity * item.price;
+                    row.innerHTML = `
+                        <td style="text-align: center;">${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td style="text-align: center;">${item.quantity}</td>
+                        <td style="text-align: right;">Rs.${item.price}</td>
+                        <td style="text-align: right;">Rs.${total}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                alert('No bill data found. Please create a bill first.');
+                window.close();
+            }
+        });
+    </script>
+</body>
+
+</html>
