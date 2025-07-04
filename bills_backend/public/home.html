@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Sagarmatha Billing</title>
   <link rel="icon" type="image/png" href="./images/Construction Vehicle.png" />
-  <script src="https://cdn.jsdelivr.net/npm/bikram-sambat-js@1.1.2/dist/index.umd.min.js"></script>
-
   <style>
     body {
       background-color: #fef08a;
@@ -85,11 +84,14 @@
       margin-top: 20px;
     }
 
-    table, th, td {
+    table,
+    th,
+    td {
       border: 1px solid #ccc;
     }
 
-    th, td {
+    th,
+    td {
       padding: 10px;
       text-align: center;
     }
@@ -139,11 +141,11 @@
       </div>
       <div class="field">
         <label>AD Date</label>
-        <input type="date" id="adDate" onchange="convertToBS()" />
+        <input type="date" id="adDate" onchange="fetchDate()" />
       </div>
       <div class="field">
         <label>BS Date</label>
-        <input type="text" id="bsDate" placeholder="YYYY-MM-DD" onchange="convertToAD()" />
+        <input type="text" id="bsDate" placeholder="YYYY-MM-DD" onchange="fetchDate()" onfocus="ad2bs()" />
       </div>
     </div>
 
@@ -199,6 +201,7 @@
   </div>
 
   <script>
+
     const parts = [
       { id: 1, name: "Filter", price: 500 },
       { id: 2, name: "Oil Pump", price: 1200 },
@@ -308,25 +311,39 @@
       window.open('bill.html', '_blank');
     }
 
-    const bsConverter = window.BS;
-
-    function convertToBS() {
-      const adDate = document.getElementById("adDate").value;
-      if (!adDate) return;
-      const bs = bsConverter.toBS(adDate);
-      const bsString = `${bs.bsYear}-${String(bs.bsMonth).padStart(2, '0')}-${String(bs.bsDay).padStart(2, '0')}`;
-      document.getElementById("bsDate").value = bsString;
+    function fetchDate() {
+      const ad = document.getElementById('adDate').value;
+      const bs = document.getElementById('bsDate').value;
+      console.log("date in ad: ", ad);
+      console.log("date in bs: ", bs);
     }
 
-    function convertToAD() {
-      const bsInput = document.getElementById("bsDate").value;
-      if (!bsInput) return;
-      const [year, month, day] = bsInput.split('-').map(Number);
-      if (!year || !month || !day) return;
-      const ad = bsConverter.toAD(year, month, day);
-      const adString = `${ad.adYear}-${String(ad.adMonth).padStart(2, '0')}-${String(ad.adDay).padStart(2, '0')}`;
-      document.getElementById("adDate").value = adString;
+    function ad2bs() {
+      const ad = document.getElementById("adDate").value;
+
+      fetch(`http://localhost:8000/api/convert-to-bs?date=${ad}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.year && data.month && data.day) {
+            const bsDate = `${data.year}-${String(data.month).padStart(2, '0')}-${String(data.day).padStart(2, '0')}`;
+            document.getElementById("bsDate").value = bsDate;  // ✅ Set value of input
+          } else {
+            alert("Conversion failed or invalid date.");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          document.getElementById("bsDate").value = "Error";
+        });
     }
+
+
   </script>
 </body>
+
 </html>

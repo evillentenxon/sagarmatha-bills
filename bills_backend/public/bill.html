@@ -61,6 +61,15 @@
             border-bottom: 2px solid #fef3c7;
         }
 
+        .bill-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ccc;
+        }
+
         .customer-info {
             display: flex;
             justify-content: space-between;
@@ -141,9 +150,11 @@
             .print-btn {
                 display: none;
             }
+
             .bill-container {
                 max-width: 100%;
             }
+
             .bill-copy {
                 max-width: 49%;
             }
@@ -160,12 +171,16 @@
                 <img src="./images/Construction Vehicle.png" alt="logo" class="logo" />
                 <div class="header">
                     <div class="title">Sagarmatha Earthmoving Spare Parts</div>
-                    <div class="subtitle">Wholesale and Retail of Construction Vehicle Parts</div>
+                    <div class="subtitle">Wholesale and Retail of Construction Vehicle Parts <br> Dulari, Morang-Nepal</div>
+                </div>
+
+                <div class="bill-header">
+                    <div class="info-label">Bill No: <span id="customerBillNumber"></span></div>
+                    <div class="info-label">PAN No: <span style="font-weight: normal;">123456789</span></div>
                 </div>
 
                 <div class="customer-info">
                     <div class="info-block">
-                        <div><span class="info-label">Bill No:</span> <span id="customerBillNumber"></span></div>
                         <div><span class="info-label">Date:</span> <span id="customerBillDate"></span></div>
                         <div><span class="info-label">Vehicle No:</span> <span id="customerVehicleNumber"></span></div>
                     </div>
@@ -202,7 +217,7 @@
             </div>
         </div>
 
-        <!-- Vertical Divider -->
+        <!-- Divider -->
         <div class="bill-divider"></div>
 
         <!-- Owner Copy -->
@@ -212,12 +227,16 @@
                 <img src="./images/Construction Vehicle.png" alt="logo" class="logo" />
                 <div class="header">
                     <div class="title">Sagarmatha Earthmoving Spare Parts</div>
-                    <div class="subtitle">Wholesale and Retail of Construction Vehicle Parts</div>
+                    <div class="subtitle">Wholesale and Retail of Construction Vehicle Parts <br> Dulari, Morang-Nepal</div>
+                </div>
+
+                <div class="bill-header">
+                    <div class="info-label">Bill No: <span id="ownerBillNumber"></span></div>
+                    <div class="info-label">PAN No: <span style="font-weight: normal;">123456789</span></div>
                 </div>
 
                 <div class="customer-info">
                     <div class="info-block">
-                        <div><span class="info-label">Bill No:</span> <span id="ownerBillNumber"></span></div>
                         <div><span class="info-label">Date:</span> <span id="ownerBillDate"></span></div>
                         <div><span class="info-label">Vehicle No:</span> <span id="ownerVehicleNumber"></span></div>
                     </div>
@@ -262,7 +281,7 @@
             const billData = JSON.parse(localStorage.getItem('billData'));
 
             if (billData) {
-                // Display customer copy
+                // Customer Copy
                 document.getElementById('customerName').textContent = billData.customerName;
                 document.getElementById('customerAddress').textContent = billData.customerAddress;
                 document.getElementById('customerPhone').textContent = billData.customerPhone;
@@ -271,7 +290,7 @@
                 document.getElementById('customerBillNumber').textContent = billData.billNumber;
                 document.getElementById('customerGrandTotal').textContent = billData.grandTotal;
 
-                // Display owner copy (same data)
+                // Owner Copy
                 document.getElementById('ownerName').textContent = billData.customerName;
                 document.getElementById('ownerAddress').textContent = billData.customerAddress;
                 document.getElementById('ownerPhone').textContent = billData.customerPhone;
@@ -280,26 +299,23 @@
                 document.getElementById('ownerBillNumber').textContent = billData.billNumber;
                 document.getElementById('ownerGrandTotal').textContent = billData.grandTotal;
 
-                // Display bill items for both copies
+                // Bill Items
                 const customerTbody = document.getElementById('customerBillItems');
                 const ownerTbody = document.getElementById('ownerBillItems');
-                
+
                 billData.items.forEach((item, index) => {
                     const total = item.quantity * item.price;
                     const rowHTML = `
-                        <td style="text-align: center;">${index + 1}</td>
-                        <td>${item.name}</td>
-                        <td style="text-align: center;">${item.quantity}</td>
-                        <td style="text-align: right;">Rs.${item.price}</td>
-                        <td style="text-align: right;">Rs.${total}</td>
-                    `;
-                    
-                    // Customer copy
+            <td style="text-align: center;">${index + 1}</td>
+            <td>${item.name}</td>
+            <td style="text-align: center;">${item.quantity}</td>
+            <td style="text-align: right;">Rs.${item.price}</td>
+            <td style="text-align: right;">Rs.${total}</td>
+          `;
                     const customerRow = document.createElement('tr');
                     customerRow.innerHTML = rowHTML;
                     customerTbody.appendChild(customerRow);
-                    
-                    // Owner copy
+
                     const ownerRow = document.createElement('tr');
                     ownerRow.innerHTML = rowHTML;
                     ownerTbody.appendChild(ownerRow);
@@ -311,4 +327,5 @@
         });
     </script>
 </body>
+
 </html>
